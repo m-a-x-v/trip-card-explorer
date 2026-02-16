@@ -1,8 +1,8 @@
 export interface Trip {
   id: number;
   name: string;
-  image: string;
+  rating: number;
   description: string;
   long_description: string;
-  rating: number;
+  image: string;
 }
