@@ -1,4 +1,3 @@
-
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
@@ -34,10 +33,12 @@ const theme = createTheme({
         root: {
           borderRadius: '16px',
           boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-          transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-          '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: '0 12px 28px rgba(0,0,0,0.16)',
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+          '@media (hover: hover) and (pointer: fine)': {
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: '0 10px 26px rgba(0,0,0,0.14)',
+            },
           },
         },
       },

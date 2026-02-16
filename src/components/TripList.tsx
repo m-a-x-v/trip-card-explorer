@@ -20,4 +20,4 @@ const TripList: React.FC<TripListProps> = ({ trips, onMoreInfo }) => {
   );
 };
 
-export default TripList;
+export default React.memo(TripList);

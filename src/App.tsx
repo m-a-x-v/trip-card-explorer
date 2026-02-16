@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useDeferredValue } from 'react';
 import { Box, Typography, TextField, Switch, FormControlLabel, CircularProgress, Alert } from '@mui/material';
 import TripList from './components/TripList';
 import MoreInfoModal from './components/MoreInfoModal';
@@ -32,7 +32,6 @@ const parseTripPayload = (payload: unknown): Trip[] | null => {
 
 const App: React.FC = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
-  const [filteredTrips, setFilteredTrips] = useState<Trip[]>([]);
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortByRating, setSortByRating] = useState(false);
@@ -83,30 +82,31 @@ const App: React.FC = () => {
     };
   }, []);
 
-  useEffect(() => {
-    let currentTrips = [...trips];
-    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+  const normalizedSearchTerm = useMemo(() => searchTerm.trim().toLowerCase(), [searchTerm]);
+  const deferredSearchTerm = useDeferredValue(normalizedSearchTerm);
 
-    if (normalizedSearchTerm) {
-      currentTrips = currentTrips.filter(trip =>
-        trip.name.toLowerCase().includes(normalizedSearchTerm)
-      );
-    }
+  const filteredTrips = useMemo(() => {
+    let currentTrips = deferredSearchTerm
+      ? trips.filter(trip => trip.name.toLowerCase().includes(deferredSearchTerm))
+      : trips;
 
     if (sortByRating) {
-      currentTrips.sort((a, b) => b.rating - a.rating);
+      currentTrips = [...currentTrips].sort((a, b) => b.rating - a.rating);
     }
 
-    setFilteredTrips(currentTrips);
-  }, [searchTerm, sortByRating, trips]);
+    return currentTrips;
+  }, [trips, deferredSearchTerm, sortByRating]);
 
-  const handleMoreInfo = (trip: Trip) => {
+  const hasNoTrips = !loading && !error && trips.length === 0;
+  const hasNoResults = !loading && !error && trips.length > 0 && filteredTrips.length === 0;
+
+  const handleMoreInfo = useCallback((trip: Trip) => {
     setSelectedTrip(trip);
-  };
+  }, []);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setSelectedTrip(null);
-  };
+  }, []);
 
   return (
     <Box className="app-shell">
@@ -137,7 +137,11 @@ const App: React.FC = () => {
         <Box className="error-state">
           <Alert severity="error">{error}</Alert>
         </Box>
-      ) : filteredTrips.length === 0 ? (
+      ) : hasNoTrips ? (
+        <Box className="no-results-state">
+          <Alert severity="info">No trip data available.</Alert>
+        </Box>
+      ) : hasNoResults ? (
         <Box className="no-results-state">
           <Alert severity="info">No locations match your search.</Alert>
         </Box>

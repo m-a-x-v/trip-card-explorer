@@ -4,14 +4,12 @@ import {
   Box,
   Typography,
   Rating,
-  IconButton,
   Backdrop,
   Fade,
   Paper,
   Chip,
   Button
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import type { Trip } from '../types';
 import { FALLBACK_IMAGE, getImageOrFallback } from '../utils/imageFallback';
 
@@ -30,7 +28,7 @@ const MoreInfoModal: React.FC<MoreInfoModalProps> = ({ trip, onClose }) => {
 
   if (!trip) return null;
 
-  const imageSrc = getImageOrFallback(trip.image);
+  const imageSrc = getImageOrFallback(trip.image, 'modal');
 
   return (
     <Modal
@@ -68,23 +66,7 @@ const MoreInfoModal: React.FC<MoreInfoModalProps> = ({ trip, onClose }) => {
           p: 0,
           bgcolor: 'background.paper',
         }}>
-          <Box sx={{ position: 'relative' }}>
-            <IconButton
-              aria-label="close"
-              onClick={onClose}
-              sx={{
-                position: 'absolute',
-                right: 12,
-                top: 12,
-                color: (theme) => theme.palette.grey[500],
-                backgroundColor: 'rgba(255,255,255,0.7)',
-                '&:hover': {
-                  backgroundColor: 'rgba(255,255,255,1)',
-                }
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
+          <Box>
             <img 
               src={imageSrc} 
               alt={trip.name} 

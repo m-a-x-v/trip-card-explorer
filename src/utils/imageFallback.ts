@@ -19,8 +19,41 @@ const FALLBACK_IMAGE_SVG = `
 
 export const FALLBACK_IMAGE = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(FALLBACK_IMAGE_SVG)}`;
 
-export const getImageOrFallback = (image: string | undefined | null): string => {
+type ImageVariant = 'card' | 'modal';
+
+const UNSPLASH_HOST = 'images.unsplash.com';
+
+const IMAGE_VARIANT_CONFIG: Record<ImageVariant, { width: number; height: number; quality: number }> = {
+  card: { width: 700, height: 420, quality: 70 },
+  modal: { width: 1200, height: 700, quality: 75 },
+};
+
+const optimizeImageUrl = (image: string, variant: ImageVariant): string => {
+  if (image.startsWith('data:')) return image;
+
+  try {
+    const url = new URL(image);
+    if (!url.hostname.includes(UNSPLASH_HOST)) return image;
+
+    const config = IMAGE_VARIANT_CONFIG[variant];
+    url.searchParams.set('auto', 'format');
+    url.searchParams.set('fit', 'crop');
+    url.searchParams.set('w', String(config.width));
+    url.searchParams.set('h', String(config.height));
+    url.searchParams.set('q', String(config.quality));
+    url.searchParams.set('fm', 'webp');
+
+    return url.toString();
+  } catch {
+    return image;
+  }
+};
+
+export const getImageOrFallback = (
+  image: string | undefined | null,
+  variant: ImageVariant = 'card',
+): string => {
   if (!image) return FALLBACK_IMAGE;
   const trimmedImage = image.trim();
-  return trimmedImage.length > 0 ? trimmedImage : FALLBACK_IMAGE;
+  return trimmedImage.length > 0 ? optimizeImageUrl(trimmedImage, variant) : FALLBACK_IMAGE;
 };

@@ -9,7 +9,7 @@ interface TripCardProps {
 }
 
 const TripCard: React.FC<TripCardProps> = ({ trip, onMoreInfo }) => {
-  const imageSrc = getImageOrFallback(trip.image);
+  const imageSrc = getImageOrFallback(trip.image, 'card');
 
   const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
     const target = event.currentTarget;
@@ -24,13 +24,17 @@ const TripCard: React.FC<TripCardProps> = ({ trip, onMoreInfo }) => {
         <CardMedia
           component="img"
           height="200"
+          loading="lazy"
+          decoding="async"
           image={imageSrc}
           alt={trip.name}
           onError={handleImageError}
           sx={{
-            transition: 'transform 0.4s ease',
-            '&:hover': {
-              transform: 'scale(1.1)',
+            transition: 'transform 0.25s ease',
+            '@media (hover: hover) and (pointer: fine)': {
+              '&:hover': {
+                transform: 'scale(1.03)',
+              },
             },
           }}
         />
@@ -62,4 +66,4 @@ const TripCard: React.FC<TripCardProps> = ({ trip, onMoreInfo }) => {
   );
 };
 
-export default TripCard;
+export default React.memo(TripCard);
