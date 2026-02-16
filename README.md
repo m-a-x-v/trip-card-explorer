@@ -1,73 +1,65 @@
-# React + TypeScript + Vite
+# Trip Card Explorer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Small React + TypeScript app that displays trip cards loaded from a local mock JSON API.
 
-Currently, two official plugins are available:
+## How To Run
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the dev server:
+   ```bash
+   npm run dev
+   ```
+3. Open the app at the local URL shown by Vite (typically `http://localhost:5173`).
 
-## React Compiler
+## Build
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Data Source
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Data is fetched from `public/data.json` using `fetch`.
+- The payload shape is an array of trips with:
+  - `id`
+  - `name`
+  - `image`
+  - `short_description`
+  - `long_description`
+  - `rating`
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Features Implemented
+
+- Async data fetch with loading and error states
+- Responsive grid of trip cards
+- Card content:
+  - image (with local placeholder fallback)
+  - name
+  - rating
+  - short description
+  - `More Info` modal trigger
+- Modal with full trip details
+- Search by trip name
+- Sort-by-rating toggle
+- SASS-based layout and responsive styling
+
+## Design Decisions
+
+- **Type-safe data model**: `Trip` interface aligns with the required data contract.
+- **Mock API behavior**: app uses `fetch('/data.json')` instead of static import to reflect API-style loading/error handling.
+- **Component split**:
+  - `App` manages data fetch/filter/sort state.
+  - `TripList` handles responsive grid rendering.
+  - `TripCard` handles summary presentation + CTA.
+  - `MoreInfoModal` handles detail view.
+- **Styling approach**: SASS (`src/styles/app.scss`) handles layout and responsiveness; Material UI components provide accessible primitives and consistent theming.
+
+## Trade-offs
+
+- Material UI + SASS together is pragmatic and fast for delivery, but introduces dual styling approaches (`sx` + classes) instead of a single styling system.
+- Client-side search/sort is simple and performant for this dataset size, but would need server-side pagination/filtering for larger datasets.
+- Data validation is intentionally lightweight (basic shape guard) to keep the sample app small.

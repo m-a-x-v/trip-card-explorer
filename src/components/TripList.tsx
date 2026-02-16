@@ -10,16 +10,9 @@ interface TripListProps {
 
 const TripList: React.FC<TripListProps> = ({ trips, onMoreInfo }) => {
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '16px',
-        justifyContent: 'center',
-      }}
-    >
+    <Box className="trip-grid">
       {trips.map(trip => (
-        <Box key={trip.id} sx={{ flex: '1 1 300px', maxWidth: '345px' }}>
+        <Box key={trip.id} className="trip-grid-item">
           <TripCard trip={trip} onMoreInfo={onMoreInfo} />
         </Box>
       ))}

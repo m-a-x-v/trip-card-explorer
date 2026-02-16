@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardMedia, Typography, Button, Rating, Box, CardActions } from '@mui/material';
 import type { Trip } from '../types';
+import { FALLBACK_IMAGE, getImageOrFallback } from '../utils/imageFallback';
 
 interface TripCardProps {
   trip: Trip;
@@ -8,14 +9,13 @@ interface TripCardProps {
 }
 
 const TripCard: React.FC<TripCardProps> = ({ trip, onMoreInfo }) => {
-  const [imageSrc, setImageSrc] = useState(trip.image);
+  const imageSrc = getImageOrFallback(trip.image);
 
-  useEffect(() => {
-    setImageSrc(trip.image);
-  }, [trip.image]);
-
-  const handleImageError = () => {
-    setImageSrc('https://via.placeholder.com/400x200?text=Image+Not+Available');
+  const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = event.currentTarget;
+    if (target.dataset.fallbackApplied === 'true') return;
+    target.dataset.fallbackApplied = 'true';
+    target.src = FALLBACK_IMAGE;
   };
 
   return (
@@ -50,12 +50,12 @@ const TripCard: React.FC<TripCardProps> = ({ trip, onMoreInfo }) => {
             "-webkit-line-clamp": 3,
             "-webkit-box-orient": "vertical"
         }}>
-          {trip.description}
+          {trip.short_description}
         </Typography>
       </CardContent>
       <CardActions sx={{ justifyContent: 'flex-end', p: 2 }}>
         <Button variant="contained" color="primary" onClick={() => onMoreInfo(trip)}>
-          Learn More
+          More Info
         </Button>
       </CardActions>
     </Card>

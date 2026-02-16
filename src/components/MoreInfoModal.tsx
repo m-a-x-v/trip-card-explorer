@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   Modal,
   Box,
@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import type { Trip } from '../types';
+import { FALLBACK_IMAGE, getImageOrFallback } from '../utils/imageFallback';
 
 interface MoreInfoModalProps {
   trip: Trip | null;
@@ -20,17 +21,16 @@ interface MoreInfoModalProps {
 }
 
 const MoreInfoModal: React.FC<MoreInfoModalProps> = ({ trip, onClose }) => {
-  const [imageSrc, setImageSrc] = useState(trip?.image);
-
-  useEffect(() => {
-    setImageSrc(trip?.image);
-  }, [trip]);
-
-  const handleImageError = () => {
-    setImageSrc('https://via.placeholder.com/500x250?text=Image+Not+Available');
+  const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = event.currentTarget;
+    if (target.dataset.fallbackApplied === 'true') return;
+    target.dataset.fallbackApplied = 'true';
+    target.src = FALLBACK_IMAGE;
   };
 
   if (!trip) return null;
+
+  const imageSrc = getImageOrFallback(trip.image);
 
   return (
     <Modal
